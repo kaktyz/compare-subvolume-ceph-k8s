@@ -75,8 +75,10 @@ func main() {
 	var kubeconfig *string
 
 	if KUBE_CONFIG_FILE_PATH == "" {
-		// Переменная окружения не задана
-		fmt.Println("Переменная окружения не задана. Выполняем действие по умолчанию.")
+		if LOG_LEVEL == "DEBUG" {
+			message := fmt.Sprintf("Переменная окружения KUBE_CONFIG_FILE_PATH не задана. Выполняем действие по умолчанию.")
+			logWithTime(message)
+		}
 		if home := homedir.HomeDir(); home != "" {
 			kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
 		} else {
@@ -84,18 +86,13 @@ func main() {
 		}
 		flag.Parse()
 	} else {
-		// Переменная окружения задана
-		fmt.Printf("Переменная окружения задана: %s\n", KUBE_CONFIG_FILE_PATH)
-
-		// Определяем флаг для kubeconfig
-
+		if LOG_LEVEL == "DEBUG" {
+			message := fmt.Sprintf("Переменная окружения задана: %s\n", KUBE_CONFIG_FILE_PATH)
+			logWithTime(message)
+		}
 		defaultKubeConfigPath := KUBE_CONFIG_FILE_PATH
-
-		// Указываем флаг для возможности переопределить путь к файлу конфигурации
 		kubeconfig = flag.String("kubeconfig", defaultKubeConfigPath, "(опционально) абсолютный путь до kubeconfig файла")
-
 		flag.Parse()
-
 	}
 
 	// Создание конфигурации клиента
