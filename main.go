@@ -549,8 +549,8 @@ func findMatchesAndDifferences(list1, list2 []string) {
 	}
 
 	// Выводим результаты
-	logWithTime(fmt.Sprintf("🌽Matches: %+v", matches))
-	logWithTime(fmt.Sprintf("🦐Differences: %+v", differences))
+	logWithTime(fmt.Sprintf("🌽Matches %v values: %+v", len(matches), matches))
+	// logWithTime(fmt.Sprintf("🦐Differences %v values: %+v", len(differences), differences))
 }
 
 func loadSubvolumeNamesFromFile(filePath string) error {
