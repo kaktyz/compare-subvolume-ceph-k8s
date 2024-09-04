@@ -24,6 +24,7 @@ var subvolumeNames []string
 var pvFromKubeArr []string
 
 var LOG_LEVEL = getEnv("LOG_LEVEL", "INFO")
+var KUBE_CONFIG_FILE_PATH = os.Getenv("KUBE_CONFIG_FILE_PATH")
 
 // LogEntry logs in json mod
 type LogEntry struct {
@@ -71,14 +72,31 @@ func main() {
 		logWithTime(fmt.Sprintf("Array from file: %+v", subvolumeNames))
 	}
 
-	// Загрузка kubeconfig
 	var kubeconfig *string
-	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
+
+	if KUBE_CONFIG_FILE_PATH == "" {
+		// Переменная окружения не задана
+		fmt.Println("Переменная окружения не задана. Выполняем действие по умолчанию.")
+		if home := homedir.HomeDir(); home != "" {
+			kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
+		} else {
+			kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
+		}
+		flag.Parse()
 	} else {
-		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
+		// Переменная окружения задана
+		fmt.Printf("Переменная окружения задана: %s\n", KUBE_CONFIG_FILE_PATH)
+
+		// Определяем флаг для kubeconfig
+
+		defaultKubeConfigPath := KUBE_CONFIG_FILE_PATH
+
+		// Указываем флаг для возможности переопределить путь к файлу конфигурации
+		kubeconfig = flag.String("kubeconfig", defaultKubeConfigPath, "(опционально) абсолютный путь до kubeconfig файла")
+
+		flag.Parse()
+
 	}
-	flag.Parse()
 
 	// Создание конфигурации клиента
 	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
