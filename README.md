@@ -10,6 +10,6 @@ You can use global env `KUBE_CONFIG_FILE_PATH` to declare full path to kubeconfi
 ## HTU
 ```bash
 go build -mod=vendor -x -v
-sudo chmod +x ./main.go
+sudo chmod +x ./main
 ./main
 ```
